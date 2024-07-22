@@ -1,7 +1,7 @@
 openapi: 3.0.0
 externalDocs:
   description: Notebook Application - Design Document
-  url: README.md
+  url: https://github.com/RogWilco/jobsearch-albertinvent/blob/main/README.md
 info:
   title: Notebook API
   description: API for managing notebooks
