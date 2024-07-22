@@ -147,9 +147,7 @@ type User = {
 
 ### API
 
-The API endpoints required to support the identified access patterns:
-
-<!-- @todo -->
+See the [OpenAPI 3.0](./openapi.yaml) specification for the API endpoints.
 
 ### Persistence
 

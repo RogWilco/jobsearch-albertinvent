@@ -1,0 +1,407 @@
+openapi: 3.0.0
+externalDocs:
+  description: Notebook Application - Design Document
+  url: README.md
+info:
+  title: Notebook API
+  description: API for managing notebooks
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local server
+
+components:
+  schemas:
+    Notebook:
+      allOf:
+        - type: object
+          properties:
+            id:
+              allOf:
+                - $ref: "#/components/schemas/CUID"
+                - readOnly: true
+              readOnly: true
+            title:
+              type: string
+            revision:
+              type: number
+              readOnly: true
+            elements:
+              type: array
+              items:
+                $ref: "#/components/schemas/Element"
+        - $ref: "#/components/schemas/Metadata"
+
+    Element:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/CUID"
+        type:
+          type: string
+          enum:
+            - text
+            - image
+            - code
+        value:
+          oneOf:
+            - type: string
+            - type: object
+        order:
+          type: number
+
+    User:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/CUID"
+        name:
+          type: string
+      required:
+        - firstName
+        - lastNames
+      readOnly: true
+
+    CUID:
+      description: A collision-resistant unique identifier (similar to a UUID).
+      type: string
+      format: CUID
+      pattern: "^[a-z0-9]{24}$"
+      example: "c17214382873Nqbqksrdpaj9glyjdmmra"
+      externalDocs:
+        url: https://github.com/paralleldrive/Cuid2
+
+    Metadata:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          $ref: "#/components/schemas/User"
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedBy:
+          $ref: "#/components/schemas/User"
+
+tags:
+  - name: Primary
+    description: Endpoints covering the primary access patterns.
+  - name: Future
+    description: Endpoints covering documented future access patterns.
+
+paths:
+  /notebooks:
+    get:
+      tags:
+        - Future
+      summary: Get a list of all notebooks
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/Notebook"
+                    - properties:
+                        elements:
+                          writeOnly: true
+
+    post:
+      tags:
+        - Future
+      summary: Create a new notebook with an initial revision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Notebook"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notebook"
+        "409":
+          description: Conflict
+
+  /notebooks/{id}:
+    get:
+      tags:
+        - Future
+      summary: Get the latest revision of a notebook by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CUID"
+          description: The ID of the notebook to get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notebook"
+        "404":
+          description: Not Found
+
+    post:
+      tags:
+        - Future
+      summary: Revert a notebook to a specific revision
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CUID"
+          description: The ID of the notebook for which to create a revision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revision:
+                  type: number
+      responses:
+        "201":
+          description: Rolled Back
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notebook"
+        "404":
+          description: Not Found
+
+    patch:
+      tags:
+        - Primary
+      summary: Partially update a notebook by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CUID"
+          description: The ID of the notebook to be updated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Notebook"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notebook"
+        "404":
+          description: Not Found
+
+    delete:
+      tags:
+        - Future
+      summary: Delete a notebook by ID and all its revisions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CUID"
+          description: The ID of the notebook to delete
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+
+  /notebooks/{id}/revisions:
+    get:
+      tags:
+        - Primary
+      summary: Get all revisions of a notebook by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CUID"
+          description: The ID of the notebook for which to get revisions
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/Notebook"
+                    - properties:
+                        elements:
+                          writeOnly: true
+        "404":
+          description: Not Found
+
+    post:
+      tags:
+        - Primary
+      summary: Create a new revision of a notebook by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CUID"
+          description: The ID of the notebook for which to create a revision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Notebook"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notebook"
+        "404":
+          description: Not Found
+
+  /notebooks/{id}/revisions/{revision}:
+    get:
+      tags:
+        - Future
+      summary: Get a specific revision of a notebook by ID and revision number
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CUID"
+          description: The ID of the notebook for which to get a revision
+        - name: revision
+          in: path
+          required: true
+          schema:
+            type: number
+          description: The revision number to get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notebook"
+        "404":
+          description: Not Found
+
+    # patch:
+    #   tags:
+    #     - Notebooks
+    #   summary: Partially update a notebook by ID
+
+    #   parameters:
+    #     - name: id
+    #       in: path
+    #       required: true
+    #       schema:
+    #         type: string
+    #       description: The ID of the notebook to be updated
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           type: object
+    #           properties:
+    #             title:
+    #               type: string
+    #             content:
+    #               type: string
+    #           required:
+    #             - title
+    #             - content
+    #   responses:
+    #     '200':
+    #       description: OK
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/Notebook'
+    #     '404':
+    #       description: Not Found
+
+    # get:
+    #   summary: Get a notebook by ID
+    #   parameters:
+    #     - name: id
+    #       in: path
+    #       required: true
+    #       schema:
+    #         type: integer
+    #       description: ID of the notebook to get
+    #   responses:
+    #     '200':
+    #       description: OK
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/Notebook'
+    #     '404':
+    #       description: Not Found
+    # put:
+    #   summary: Update a notebook by ID
+    #   parameters:
+    #     - name: id
+    #       in: path
+    #       required: true
+    #       schema:
+    #         type: integer
+    #       description: ID of the notebook to update
+    #   requestBody:
+    #     required: true
+    #     content:
+    #       application/json:
+    #         schema:
+    #           $ref: '#/components/schemas/Notebook'
+    #   responses:
+    #     '200':
+    #       description: OK
+    #       content:
+    #         application/json:
+    #           schema:
+    #             $ref: '#/components/schemas/Notebook'
+    #     '404':
+    #       description: Not Found
+    # delete:
+    #   summary: Delete a notebook by ID
+    #   parameters:
+    #     - name: id
+    #       in: path
+    #       required: true
+    #       schema:
+    #         type: integer
+    #       description: ID of the notebook to delete
+    #   responses:
+    #     '204':
+    #       description: No Content
+    #     '404':
+    #       description: Not Found
