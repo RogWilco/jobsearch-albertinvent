@@ -1,3 +1,5 @@
+[![OpenAPI 3.0][swagger-image]][swagger-url]
+
 # Albert Notebook
 
 - [Instructions](#instructions)
@@ -147,7 +149,10 @@ type User = {
 
 ### API
 
-See the [OpenAPI 3.0](./openapi.yaml) specification for the API endpoints.
+See the following external resources for API documentation:
+
+- [openapi.yaml][openapi-url]
+- [Swagger Documentation][swagger-url]
 
 ### Persistence
 
@@ -441,3 +446,7 @@ Unlike LSIs, GSIs can be added to existing tables as new access patterns emerge.
 - [DynamoDB Data Types](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingRulesDataTypes.html)
 - [DynamoDB API Reference](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/Welcome.html)
 - [DynamoDB Data Model](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-modeling-nosql-B.html)
+
+[swagger-image]: https://img.shields.io/swagger/valid/3.0?specUrl=https%3A%2F%2Fraw.githubusercontent.com%2FRogWilco%2Fjobsearch-albertinvent%2Fmain%2Fopenapi.yaml&logo=swagger&logoColor=white&label=OpenAPI%203.0
+[swagger-url]: https://petstore.swagger.io/?url=https://raw.githubusercontent.com/RogWilco/jobsearch-albertinvent/main/openapi.yaml
+[openapi-url]: https://raw.githubusercontent.com/RogWilco/jobsearch-albertinvent/main/openapi.yaml
