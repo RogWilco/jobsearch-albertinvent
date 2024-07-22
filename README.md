@@ -6,6 +6,7 @@
   - [Abstract](#abstract)
   - [Exercise (45 Min)](#exercise-45-min)
 - [Design](#design)
+  - [Target Stack](#target-stack)
   - [Access Patterns](#access-patterns)
   - [Future Access Patterns](#future-access-patterns)
   - [Entities](#entities)
@@ -38,6 +39,20 @@ Albert Notebook enables users to create free-flow content using various notebook
 Design a backend for the Notebook (API and database schema) to implement the specified functionality. Utilize OpenAPI 3.0 to define all REST endpoints. Use DynamoDB with a single table design to store and retrieve transactional data. The API should be optimized for patching the notebook, retrieving version history, and reordering notebook content.
 
 ## Design
+
+### Target Stack
+
+The backend system is designed assuming the following technologies:
+
+- **Cloud Provider:** AWS
+- **IaC:** CloudFormation
+- **Database:** DynamoDB
+- **API Design:** RESTful
+- **Backend Service(s):**
+  - AWS API Gateway
+  - AWS Lambda
+  - Node.js
+  - TypeScript
 
 ### Access Patterns
 
