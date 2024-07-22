@@ -53,6 +53,7 @@ The backend system is designed assuming the following technologies:
   - AWS Lambda
   - Node.js
   - TypeScript
+  - OneTable (DynamoDB "ORM")
 
 ### Access Patterns
 
